@@ -1,0 +1,24 @@
+
+# A tibble: 20 × 3
+   Team_A        Media_Gols Total_Jogos
+   <chr>              <dbl>       <int>
+ 1 Flamengo RJ        2.05           38
+ 2 Palmeiras          1.74           38
+ 3 Mirassol           1.66           38
+ 4 Botafogo RJ        1.53           38
+ 5 Cruzeiro           1.45           38
+ 6 Vasco              1.45           38
+ 7 Bahia              1.32           38
+ 8 Fluminense         1.32           38
+ 9 Gremio             1.24           38
+10 Bragantino         1.18           38
+11 Santos             1.18           38
+12 Internacional      1.16           38
+13 Atletico-MG        1.13           38
+14 Fortaleza          1.13           38
+15 Sao Paulo          1.13           38
+16 Corinthians        1.11           38
+17 Juventude          0.921          38
+18 Vitoria            0.921          38
+19 Ceara              0.895          38
+20 Sport Recife       0.737          38

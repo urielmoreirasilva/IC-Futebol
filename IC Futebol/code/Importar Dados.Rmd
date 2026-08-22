@@ -1,0 +1,61 @@
+---
+title: "Base de Dados"
+author: "Uriel Silva"
+date: "`r format(Sys.Date(), '%d-%m-%Y')`"
+output: html_document
+---
+
+```{r}
+## Limpeza inicial
+rm(list = ls())
+```
+
+
+```{r setup, include = FALSE}
+## Bibliotecas Necessárias
+library(FootStats) ## remotes::install_github("salvnetto/DYNMO")
+library(openxlsx)
+library(tidyverse)
+library(writexl)
+```
+
+
+```{r Bases de Dados, include = FALSE}
+## Histórico de partidas
+matches = load_data("spain", "laliga", "match_history")
+```
+
+
+```{r}
+## Gerando variável de resultado
+matches$resultado <- factor(ifelse(matches$gf > matches$ga, 2,
+                            ifelse(matches$gf == matches$ga, 1, 0)))
+
+## Gerando indicadora de mandante
+matches$home = 0
+matches$home[which(matches$venue == 'Home')] = 1
+
+## Gerando indicadoras de efeito defesa e ataque
+matches$atk = 1
+matches$def = -1
+
+## Filtrando por temporada
+matches = matches %>% subset(season == "2024-2025")
+
+## Filtrando por mandante
+matches = matches %>% subset(venue == "Home")
+```
+
+
+```{r}
+## Exportando os dados
+write_xlsx(x = matches, path = '_dta/matches La Liga 2025-2024.xlsx')
+```
+
+
+```{r}
+## Limpeza final
+unloadNamespace('FootStats')
+rm(list = ls())
+```
+

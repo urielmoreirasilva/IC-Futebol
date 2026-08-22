@@ -1,0 +1,59 @@
+
+
+Call:
+glm(formula = Y_bin_d ~ 1 + factor(Team_A) + factor(Team_B) + 
+    factor(Home), family = binomial(link = logit), data = df_complete_d)
+
+Coefficients:
+                              Estimate Std. Error z value Pr(>|z|)  
+(Intercept)                 -4.627e-01  5.137e-01  -0.901    0.368  
+factor(Team_A)Bahia         -4.285e-01  5.230e-01  -0.819    0.413  
+factor(Team_A)Botafogo RJ    1.883e-15  4.997e-01   0.000    1.000  
+factor(Team_A)Bragantino    -9.608e-01  5.703e-01  -1.685    0.092 .
+factor(Team_A)Ceara         -2.776e-01  5.135e-01  -0.541    0.589  
+factor(Team_A)Corinthians   -1.353e-01  5.059e-01  -0.267    0.789  
+factor(Team_A)Cruzeiro       1.295e-01  4.947e-01   0.262    0.793  
+factor(Team_A)Flamengo RJ   -2.776e-01  5.135e-01  -0.541    0.589  
+factor(Team_A)Fluminense    -7.661e-01  5.502e-01  -1.392    0.164  
+factor(Team_A)Fortaleza     -2.776e-01  5.135e-01  -0.541    0.589  
+factor(Team_A)Gremio        -2.776e-01  5.135e-01  -0.541    0.589  
+factor(Team_A)Internacional -1.353e-01  5.059e-01  -0.267    0.789  
+factor(Team_A)Juventude     -5.903e-01  5.349e-01  -1.104    0.270  
+factor(Team_A)Mirassol       1.295e-01  4.947e-01   0.262    0.793  
+factor(Team_A)Palmeiras     -7.661e-01  5.502e-01  -1.392    0.164  
+factor(Team_A)Santos        -1.353e-01  5.059e-01  -0.267    0.789  
+factor(Team_A)Sao Paulo     -4.285e-01  5.230e-01  -0.819    0.413  
+factor(Team_A)Sport Recife  -1.353e-01  5.059e-01  -0.267    0.789  
+factor(Team_A)Vasco         -9.608e-01  5.703e-01  -1.685    0.092 .
+factor(Team_A)Vitoria        2.603e-15  4.997e-01   0.000    1.000  
+factor(Team_B)Bahia         -4.285e-01  5.230e-01  -0.819    0.413  
+factor(Team_B)Botafogo RJ    8.244e-16  4.997e-01   0.000    1.000  
+factor(Team_B)Bragantino    -9.608e-01  5.703e-01  -1.685    0.092 .
+factor(Team_B)Ceara         -2.776e-01  5.135e-01  -0.541    0.589  
+factor(Team_B)Corinthians   -1.353e-01  5.059e-01  -0.267    0.789  
+factor(Team_B)Cruzeiro       1.295e-01  4.947e-01   0.262    0.793  
+factor(Team_B)Flamengo RJ   -2.776e-01  5.135e-01  -0.541    0.589  
+factor(Team_B)Fluminense    -7.661e-01  5.502e-01  -1.392    0.164  
+factor(Team_B)Fortaleza     -2.776e-01  5.135e-01  -0.541    0.589  
+factor(Team_B)Gremio        -2.776e-01  5.135e-01  -0.541    0.589  
+factor(Team_B)Internacional -1.353e-01  5.059e-01  -0.267    0.789  
+factor(Team_B)Juventude     -5.903e-01  5.349e-01  -1.104    0.270  
+factor(Team_B)Mirassol       1.295e-01  4.947e-01   0.262    0.793  
+factor(Team_B)Palmeiras     -7.661e-01  5.502e-01  -1.392    0.164  
+factor(Team_B)Santos        -1.353e-01  5.059e-01  -0.267    0.789  
+factor(Team_B)Sao Paulo     -4.285e-01  5.230e-01  -0.819    0.413  
+factor(Team_B)Sport Recife  -1.353e-01  5.059e-01  -0.267    0.789  
+factor(Team_B)Vasco         -9.608e-01  5.703e-01  -1.685    0.092 .
+factor(Team_B)Vitoria        1.942e-15  4.997e-01   0.000    1.000  
+factor(Home)Home             1.027e-16  1.682e-01   0.000    1.000  
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+(Dispersion parameter for binomial family taken to be 1)
+
+    Null deviance: 871.88  on 759  degrees of freedom
+Residual deviance: 844.91  on 720  degrees of freedom
+AIC: 924.91
+
+Number of Fisher Scoring iterations: 4
+
