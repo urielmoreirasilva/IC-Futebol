@@ -4,12 +4,12 @@ Confusion Matrix and Statistics
           Reference
 Prediction   1   0
          1   0   0
-         0 178 502
+         0  89 251
                                           
                Accuracy : 0.7382          
-                 95% CI : (0.7035, 0.7709)
+                 95% CI : (0.6881, 0.7842)
     No Information Rate : 0.7382          
-    P-Value [Acc > NIR] : 0.5202          
+    P-Value [Acc > NIR] : 0.5285          
                                           
                   Kappa : 0               
                                           

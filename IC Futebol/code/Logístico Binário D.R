@@ -2,7 +2,7 @@
 # ===========================
 # Código Futebol
 # Modelo Logístico Binário: D 
-# Essa versão: 20/08/2026      
+# Essa versão: 01/09/2026      
 # ===========================
 
 
@@ -181,13 +181,13 @@ dta_d.2$Home = "Away"
 
 
 ## Combinando as bases
-df_complete_d = dta_d %>%
+df_d_completo = dta_d %>%
   bind_rows(dta_d.2) %>%
   arrange(Week)
 
 
 ## Visualizando os dados
-View(df_complete_d)
+View(df_d_completo)
 
 
 
@@ -238,7 +238,7 @@ sink()
 
 
 ## Gols marcados por Team_A
-goals = df_complete_d %>% 
+goals = df_d_completo %>% 
   group_by(Team_A) %>%
   summarise(Media_Gols = mean(Score_A),
             Total_Jogos = n()) %>%
@@ -253,7 +253,7 @@ sink()
 
 ## Diferença média de gols por Team_A
 ## ---- Elaborar um gráfico desse e comparar com fator ataque e defesa estimados [!]
-diff_goals = df_complete_d %>%
+diff_goals = df_d_completo %>%
   mutate(dg = Score_A - Score_B) %>%
   group_by(Team_A) %>%
   summarise(Dif_Gol_Med = mean(dg)) %>%
@@ -267,7 +267,7 @@ sink()
 
 
 ## Distribuição de gols marcados (ambos os times)
-ggplot(df_complete_d, aes(x = Score_A)) +
+ggplot(df_d_completo, aes(x = Score_A)) +
   geom_histogram(binwidth = 1, fill = "steelblue", color = "black") +
   theme_bw() +
   labs(title = "Distribuição dos Gols Marcados",
@@ -326,7 +326,7 @@ dev.print(file = '_out/figures/figGoalsTeamB_all.png',
 # ##################################################### #
 
 ## Criando variável de resultado
-df_complete_d = df_complete_d %>%
+df_d_completo = df_d_completo %>%
   mutate(dg = Score_A - Score_B) %>%
   mutate(Y = case_when(
     dg < 0 ~ 'L',
@@ -335,21 +335,21 @@ df_complete_d = df_complete_d %>%
   ))
 
 ## Convertendo para fator ordenado
-df_complete_d$Y = factor(df_complete_d$Y, levels = c('L', 'D', 'W'))
-contrasts(df_complete_d$Y)
+df_d_completo$Y = factor(df_d_completo$Y, levels = c('L', 'D', 'W'))
+contrasts(df_d_completo$Y)
 
 ## Re-categorizando os resultados (binário)
-df_complete_d = df_complete_d %>% mutate(Y_bin_d = case_when(
+df_d_completo = df_d_completo %>% mutate(Y_bin_d = case_when(
   Y == 'L' ~ 0,
   Y == 'D' ~ 1,
   Y == 'W' ~ 0
 ))
-df_complete_d$Y_bin_d = factor(df_complete_d$Y_bin_d, levels = c('0', '1'))
+df_d_completo$Y_bin_d = factor(df_d_completo$Y_bin_d, levels = c('0', '1'))
 
 ## Estimando regressão logística
 out_d = glm(Y_bin_d ~ 1 + factor(Team_A) + factor(Team_B) + factor(Home),
             family = binomial(link = logit),
-            data = df_complete_d)
+            data = df_d_completo)
 summary(out_d)
 # salvando em .txt
 sink(file = '_out/output/tabSummaryLogit_d (full).txt')
@@ -531,14 +531,22 @@ dev.print(file = '_out/figures/figResQQPlot_d (full).png',
 # #################################################### #
 
 ## treino/teste split
-dta_d_treino = df_complete_d %>% filter(Week <= 34)
+df_d_treino = df_d_completo %>% filter(Week <= 34) # p/ estimação
+dta_d_treino = dta_d %>% filter(Week <= 34) # p/ previsão
 dta_d_teste  = dta_d %>% filter(Week > 34)
+# checando split: bancos p/ estimação
+NROW(df_d_completo)
+NROW(df_d_treino)
+# checando split: bancos p/ previsão
+NROW(dta_d)
+NROW(dta_d_treino)
+NROW(dta_d_teste)
 
 
 ## Estimando regressão logística
 out_d_treino = glm(Y_bin_d ~ 1 + factor(Team_A) + factor(Team_B) + factor(Home),
                    family = binomial(link = logit),
-                   data = dta_d_treino)
+                   data = df_d_treino)
 summary(out_d_treino)
 # salvando em .txt
 sink(file = '_out/output/tabSummaryLogit_d (train).txt')
@@ -728,7 +736,7 @@ pred.Y_bin_d_teste = factor(ifelse(pi.hat_d_teste > cutoff, '1', '0'), levels = 
 
 
 ## Referência ajustada
-Y_bin_d_teste <- factor(dta_d_teste$Y_bin_d, levels = c("0", "1"))
+Y_bin_d_teste = factor(dta_d_teste$Y_bin_d, levels = c("0", "1"))
 Y_bin_d_teste = relevel(dta_d_teste$Y_bin_d, ref = '0')
 
 
@@ -845,7 +853,7 @@ save(
   out_d_treino,
   dta_d_treino,
   dta_d_teste,
-  df_complete_d,
+  df_d_completo,
   pi.hat_d,
   pi.hat_d_teste,
   pi.hat_d_treino,
