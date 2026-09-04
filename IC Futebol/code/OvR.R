@@ -258,8 +258,8 @@ n_L + n_D + n_W
 # acertos
 games_won = 1*(df_OvR$Y == df_OvR$Y_hat_OvR)
 cash_L = sum(games_won[which(dta$Y == 'L')]*dta$Odds_L[which(dta$Y == 'L')])
-cash_D = sum(games_won[which(dta$Y == 'D')]*dta$Odds_L[which(dta$Y == 'D')])
-cash_W = sum(games_won[which(dta$Y == 'W')]*dta$Odds_L[which(dta$Y == 'W')])
+cash_D = sum(games_won[which(dta$Y == 'D')]*dta$Odds_D[which(dta$Y == 'D')])
+cash_W = sum(games_won[which(dta$Y == 'W')]*dta$Odds_W[which(dta$Y == 'W')])
 # receita
 revenue = cash_L + cash_D + cash_W
 revenue_L = cash_L
@@ -357,8 +357,8 @@ n_L + n_D + n_W
 # acertos
 games_won = 1*(df_OvR_treino$Y == df_OvR_treino$Y_hat_OvR)
 cash_L = sum(games_won[which(dta_treino$Y == 'L')]*dta_treino$Odds_L[which(dta_treino$Y == 'L')])
-cash_D = sum(games_won[which(dta_treino$Y == 'D')]*dta_treino$Odds_L[which(dta_treino$Y == 'D')])
-cash_W = sum(games_won[which(dta_treino$Y == 'W')]*dta_treino$Odds_L[which(dta_treino$Y == 'W')])
+cash_D = sum(games_won[which(dta_treino$Y == 'D')]*dta_treino$Odds_D[which(dta_treino$Y == 'D')])
+cash_W = sum(games_won[which(dta_treino$Y == 'W')]*dta_treino$Odds_W[which(dta_treino$Y == 'W')])
 # receita
 revenue = cash_L + cash_D + cash_W
 revenue_L = cash_L
@@ -451,8 +451,8 @@ n_L + n_D + n_W
 # acertos
 games_won = 1*(df_OvR_teste$Y == df_OvR_teste$Y_hat_OvR)
 cash_L = sum(games_won[which(dta_teste$Y == 'L')]*dta_teste$Odds_L[which(dta_teste$Y == 'L')])
-cash_D = sum(games_won[which(dta_teste$Y == 'D')]*dta_teste$Odds_L[which(dta_teste$Y == 'D')])
-cash_W = sum(games_won[which(dta_teste$Y == 'W')]*dta_teste$Odds_L[which(dta_teste$Y == 'W')])
+cash_D = sum(games_won[which(dta_teste$Y == 'D')]*dta_teste$Odds_D[which(dta_teste$Y == 'D')])
+cash_W = sum(games_won[which(dta_teste$Y == 'W')]*dta_teste$Odds_W[which(dta_teste$Y == 'W')])
 # receita
 revenue = cash_L + cash_D + cash_W
 revenue_L = cash_L
