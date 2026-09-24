@@ -1,0 +1,18 @@
+Pequena explicação:
+
+O código foi feito para rodar usando o Jupyter, então eu não sei se é possível apenas copiar tudo e colar no VS Code normal.
+
+Ele está separado por ligas, e como cada liga tem sua própria planilha com as informações, as ligas europeias possuem nomes de colunas um pouco diferentes das ligas sul-americanas. Caso você copie um código da liga europeia e tente usar no banco de dados da liga sul-americana, vai dar erro.
+
+Eu verifiquei todas as ligas e os códigos estão funcionando, exceto o do Brasil, que deu algum erro e ainda não tive tempo de resolver, mas acho que é algo simples.
+
+Criei também o arquivo `requirements.txt`, que vai instalar todas as bibliotecas necessárias para o código rodar. Porém, quando eu criei o arquivo, ele estava na mesma pasta junto com o scraper hipotético que estou mexendo, então ele acabou incluindo as bibliotecas necessárias para ele também. Então existem duas opções:
+
+Primeira: tentar rodar o código e ir baixando as bibliotecas manualmente conforme os erros forem aparecendo.
+
+Segunda: baixar bibliotecas desnecessárias.
+
+Eu iria na segunda opção.
+
+Provavelmente estou esquecendo de algo, porém vocês têm meu zap, é só me perguntarem lá.
+
