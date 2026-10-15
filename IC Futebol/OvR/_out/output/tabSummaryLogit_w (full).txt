@@ -2,7 +2,7 @@
 
 Call:
 glm(formula = Y_bin_w ~ 1 + factor(Team_A) + factor(Team_B) + 
-    factor(Home), family = binomial(link = logit), data = df_w_completo)
+    factor(Home), family = binomial(link = logit), data = dta_duplicado)
 
 Coefficients:
                              Estimate Std. Error z value Pr(>|z|)    
