@@ -1,0 +1,171 @@
+import pandas as pd
+import numpy as np
+from scipy.optimize import minimize
+
+# 1. Leitura e tratamento inicial dos dados
+df_full = pd.read_csv("serie_A.csv").dropna(subset=["data", "mandante_Placar", "visitante_Placar"])
+df_full["mandante"] = df_full["mandante"].str.lower().str.strip()
+df_full["visitante"] = df_full["visitante"].str.lower().str.strip()
+df_full["data"] = pd.to_datetime(df_full["data"], dayfirst=True)
+df_full["ano"] = df_full["data"].dt.year
+
+def sigmoid(z):
+    return 1.0 / (1.0 + np.exp(-np.clip(z, -30.0, 30.0)))
+
+def treinar_modelo_binario_simetrico(df_treino, tipo_alvo, mapa_times, tamanho_times):
+    N = tamanho_times
+    x0 = np.zeros(2 * N + 2)
+
+    # Pré-processamento dos índices e alvos para vetorização interna
+    mandantes_idx = np.array([mapa_times[m] for m in df_treino["mandante"]])
+    visitantes_idx = np.array([mapa_times[v] for v in df_treino["visitante"]])
+    gc = df_treino["mandante_Placar"].values
+    gv = df_treino["visitante_Placar"].values
+
+    if tipo_alvo == 'casa':
+        y_home = (gc > gv).astype(float)
+        y_away = (gv > gc).astype(float)
+    elif tipo_alvo == 'empate':
+        y_home = (gc == gv).astype(float)
+        y_away = (gc == gv).astype(float)
+    elif tipo_alvo == 'fora':
+        y_home = (gv > gc).astype(float)
+        y_away = (gc > gv).astype(float)
+
+    def perda_e_gradiente(x):
+        ataque = x[:N]
+        defesa = x[N:2*N]
+        mando = x[2*N]
+        mu = x[2*N + 1]
+
+        # 1. Forward Pass (Linear Predictors)
+        z_home = mu + ataque[mandantes_idx] - defesa[visitantes_idx] + mando
+        p_home = sigmoid(z_home)
+
+        z_away = mu + ataque[visitantes_idx] - defesa[mandantes_idx] + 0.0
+        p_away = sigmoid(z_away)
+
+        # Log-Likelihood
+        eps = 1e-12
+        ll_home = y_home * np.log(p_home + eps) + (1.0 - y_home) * np.log(1.0 - p_home + eps)
+        ll_away = y_away * np.log(p_away + eps) + (1.0 - y_away) * np.log(1.0 - p_away + eps)
+        
+        log_likelihood = np.sum(ll_home) + np.sum(ll_away)
+
+        # Penalidade L2 nas médias
+        peso = 50.0
+        mean_atq = np.mean(ataque)
+        mean_def = np.mean(defesa)
+        log_likelihood -= peso * (mean_atq ** 2)
+        log_likelihood -= peso * (mean_def ** 2)
+
+        # 2. Backward Pass (Gradientes Analíticos)
+        err_home = y_home - p_home
+        err_away = y_away - p_away
+
+        grad_atq = np.zeros(N)
+        grad_def = np.zeros(N)
+
+        # Acúmulo de gradiente por time
+        np.add.at(grad_atq, mandantes_idx, err_home)
+        np.add.at(grad_atq, visitantes_idx, err_away)
+
+        np.add.at(grad_def, visitantes_idx, -err_home)
+        np.add.at(grad_def, mandantes_idx, -err_away)
+
+        # Gradientes dos termos globais
+        grad_mando = np.sum(err_home)
+        grad_mu = np.sum(err_home) + np.sum(err_away)
+
+        # Gradiente da Penalização L2
+        grad_atq -= (2.0 * peso / N) * mean_atq
+        grad_def -= (2.0 * peso / N) * mean_def
+
+        # Montagem do vetor de gradiente (Invertido devido ao sinal da perda)
+        grad_total = np.concatenate([grad_atq, grad_def, [grad_mando, grad_mu]])
+
+        return -log_likelihood, -grad_total
+
+    bounds = [(-3.0, 3.0)] * (2 * N) + [(-2.0, 2.0), (-3.0, 3.0)]
+    
+    resultado = minimize(
+        perda_e_gradiente, 
+        x0, 
+        method="L-BFGS-B", 
+        jac=True,  # Informa que a função retorna (perda, gradiente)
+        bounds=bounds, 
+        options={'maxiter': 400, 'ftol': 1e-5}
+    )
+
+    x_ot = resultado.x
+    return {
+        "ataque": x_ot[:N],
+        "defesa": x_ot[N:2*N],
+        "mando": x_ot[2*N],
+        "mu": x_ot[2*N + 1]
+    }
+
+# ==============================================================================
+# 2. LOOP POR ANOS (2003 A 2025)
+# ==============================================================================
+todas_previsoes = []
+anos_disponiveis = sorted([ano for ano in df_full["ano"].unique() if 2003 <= ano <= 2025])
+
+for ano in anos_disponiveis:
+    df_ano = df_full[df_full["ano"] == ano].sort_values("data").reset_index(drop=True)
+    
+    if len(df_ano) <= 40:
+        continue
+
+    todos_times = sorted(set(df_ano["mandante"]).union(set(df_ano["visitante"])))
+    tamanho = len(todos_times)
+    mapa = {t: i for i, t in enumerate(todos_times)}
+
+    df_n = df_ano.iloc[:-40].copy()
+    df_f = df_ano.iloc[-40:].copy()
+
+    print(f"Treinando ano {ano} com gradiente analítico (Treino: {len(df_n)} jogos | Teste: {len(df_f)} jogos)...")
+    
+    mod_casa = treinar_modelo_binario_simetrico(df_n, 'casa', mapa, tamanho)
+    mod_empate = treinar_modelo_binario_simetrico(df_n, 'empate', mapa, tamanho)
+    mod_fora = treinar_modelo_binario_simetrico(df_n, 'fora', mapa, tamanho)
+
+    for _, jogo in df_f.iterrows():
+        mandante = jogo["mandante"]
+        visitor = jogo["visitante"]
+
+        idx_c = mapa[mandante]
+        idx_v = mapa[visitor]
+
+        z_c = mod_casa["mu"] + mod_casa["ataque"][idx_c] - mod_casa["defesa"][idx_v] + mod_casa["mando"]
+        p_c_bruta = sigmoid(z_c)
+
+        z_e = mod_empate["mu"] + mod_empate["ataque"][idx_c] - mod_empate["defesa"][idx_v] + mod_empate["mando"]
+        p_e_bruta = sigmoid(z_e)
+
+        z_f = mod_fora["mu"] + mod_fora["ataque"][idx_c] - mod_fora["defesa"][idx_v] + mod_fora["mando"]
+        p_f_bruta = sigmoid(z_f)
+
+        soma_bruta = p_c_bruta + p_e_bruta + p_f_bruta
+        prob_casa = p_c_bruta / soma_bruta
+        prob_empate = p_e_bruta / soma_bruta
+        prob_fora = p_f_bruta / soma_bruta
+
+        todas_previsoes.append({
+            "ano": ano,
+            "data": jogo["data"],
+            "mandante": mandante,
+            "visitante": visitor,
+            "prob_casa": round(float(prob_casa), 4),
+            "prob_empate": round(float(prob_empate), 4),
+            "prob_fora": round(float(prob_fora), 4),
+            "gols_reais_casa": jogo["mandante_Placar"],
+            "gols_reais_fora": jogo["visitante_Placar"]
+        })
+
+# ==============================================================================
+# 3. CONSOLIDAÇÃO E SALVAMENTO
+# ==============================================================================
+df_saida = pd.DataFrame(todas_previsoes)
+df_saida.to_csv("probabilidades_multinomial_1x2_2003_2025.csv", index=False)
+print(f"\nSucesso: {len(df_saida)} partidas previstas entre 2003 e 2025!")
