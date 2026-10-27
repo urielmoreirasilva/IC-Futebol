@@ -5,7 +5,9 @@ from bs4 import BeautifulSoup
 import pandas as pd
 from seleniumbase import SB
 
-ano = "2025"
+
+ano = input("Ano desejado(2018-2026):")
+
 url = f"https://fbref.com/en/comps/24/{ano}/schedule/{ano}-Serie-A-Scores-and-Fixtures"
 
 print(f"--- Acessando FBref: Brasileirão {ano} ---")
@@ -35,11 +37,9 @@ with SB(uc=True) as sb:
             sb.solve_captcha()
             sb.sleep(4)
             sb.wait_for_element("table.stats_table", timeout=20)
-        except Exception:
-            # Salva print da tela para você ver o que travou
-            sb.save_screenshot("/home/ryan/Documents/erro_fbref.png")
-            print("A tela travou. Foi salvo um print em 'erro_fbref.png'")
-            raise
+        finally:
+            pass
+            
 
     # 4. Obtém o HTML após desbloqueio
     html = sb.get_page_source()
