@@ -1,0 +1,4 @@
+*.png
+__pycache__/
+.venv/
+brasileirao_*_fbref.csv
