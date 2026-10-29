@@ -5,12 +5,41 @@ from bs4 import BeautifulSoup
 import pandas as pd
 from seleniumbase import SB
 
+print("Escolha a liga")
+print("1 - Brasileirão")
+print("2 - Premier League")
+print("3 - Ligue 1")
+print("4 - La Liga")
+print("5 - Bundesliga")
+print("6 - Serie A")
+print("7 - Liga AUF")
 
-ano = input("Ano desejado(2018-2026):")
+liga = int(input("Opção desejada: "))
+ano = int(input("Ano desejado(2018-2026):"))
+final = ano + 1
 
-url = f"https://fbref.com/en/comps/24/{ano}/schedule/{ano}-Serie-A-Scores-and-Fixtures"
-
-print(f"--- Acessando FBref: Brasileirão {ano} ---")
+# Define a URL com base na liga selecionada
+if liga == 1:
+    url = f"https://fbref.com/en/comps/24/{ano}/schedule/{ano}-Serie-A-Scores-and-Fixtures"
+    print(f"--- Acessando FBref: Brasileirão {ano} ---")
+elif liga == 2:
+    url = f"https://fbref.com/en/comps/9/{ano}-{final}/schedule/{ano}-{final}-Scores-and-Fixtures"
+    print(f"--- Acessando FBref: Premier League {ano}/{final} ---")
+elif liga == 3:
+    url = f"https://fbref.com/en/comps/13/{ano}-{final}/schedule/{ano}-{final}-Ligue-1-Scores-and-Fixtures"
+    print(f"--- Acessando FBref: Ligue 1 {ano}/{final} ---")
+elif liga == 4:
+    url = f"https://fbref.com/en/comps/12/{ano}-{final}/schedule/{ano}-{final}-La-Liga-Scores-and-Fixtures"
+    print(f"--- Acessando FBref: La Liga {ano}/{final} ---")
+elif liga == 5:
+    url = f"https://fbref.com/en/comps/20/{ano}-{final}/schedule/{ano}-{final}-Bundesliga-Scores-and-Fixtures"
+    print(f"--- Acessando FBref: Bundesliga {ano}/{final} ---")
+elif liga == 6:
+    url = f"https://fbref.com/en/comps/11/{ano}-{final}/schedule/{ano}-{final}-Serie-A-Scores-and-Fixtures"
+    print(f"--- Acessando FBref: Serie A {ano}/{final} ---")
+elif liga == 7:
+    url = f"https://fbref.com/en/comps/45/{ano}/schedule/{ano}-Liga-AUF-Uruguaya-Scores-and-Fixtures"
+    print(f"--- Acessando FBref: Liga AUF {ano} ---")
 
 # Inicializa o SeleniumBase
 with SB(uc=True) as sb:
@@ -74,8 +103,22 @@ df_final.rename(columns={
     "xG.1": "xG_Visitante",
 }, inplace=True)
 
-# Salva o arquivo CSV
-caminho_csv = f"/home/ryan/Documents/brasileirao_{ano}_fbref.csv"
+# Define o caminho e nome do arquivo CSV com base na liga selecionada
+if liga == 1:
+    caminho_csv = f"/home/ryan/Documents/brasileirao_{ano}_fbref.csv"
+elif liga == 2:
+    caminho_csv = f"/home/ryan/Documents/premier_league_{ano}_{final}_fbref.csv"
+elif liga == 3:
+    caminho_csv = f"/home/ryan/Documents/ligue1_{ano}_{final}_fbref.csv"
+elif liga == 4:
+    caminho_csv = f"/home/ryan/Documents/la_liga_{ano}_{final}_fbref.csv"
+elif liga == 5:
+    caminho_csv = f"/home/ryan/Documents/bundesliga_{ano}_{final}_fbref.csv"
+elif liga == 6:
+    caminho_csv = f"/home/ryan/Documents/serie_a_{ano}_{final}_fbref.csv"
+elif liga == 7:
+    caminho_csv = f"/home/ryan/Documents/liga_auf_{ano}_fbref.csv"
+
 df_final.to_csv(caminho_csv, index=False, encoding="utf-8-sig")
 
 print(f"\nConcluído com sucesso! {len(df_final)} partidas salvas em:")
